@@ -1,5 +1,6 @@
 from Libro import Libro
 import csv
+import string
 
 class BaseLibros:
 
@@ -11,6 +12,17 @@ class BaseLibros:
             self.diccionario[titulo].append(libro)
         else:
             self.diccionario[titulo] = [libro]
+
+        self.texto = titulo
+        self.limpiar_texto()
+        titulo = self.texto
+        #Dividir titulo en palabras
+        palabras = titulo.split(" ")
+        for palabra in palabras:
+            if palabra in self.diccionario and palabra in self.diccionario[palabra]:
+                self.diccionario[palabra].append(libro)
+            else:
+                self.diccionario[palabra] = [libro]
 
     def __init__(self, archivo: str):
         lista_registros = self.carga_libro_csv(archivo)
@@ -43,6 +55,17 @@ class BaseLibros:
                           data]  # Se quitan los strings vacios de la lista(que son de algunos autores) y se reemplaza por unknown
         return clean_data
 
+    def limpiar_texto(self):
+
+        puntuacion = string.punctuation
+        puntuacion = list(puntuacion)
+        maspuntuacion = ['«', '»', '¿', '\x0c', '¡']
+        puntuacion.extend(maspuntuacion)
+
+        self.texto = self.texto.replace('\n', ' ')
+        for n in puntuacion:
+            if n in self.texto:
+                self.texto = self.texto.replace(n, ' ')
 
 if __name__ == '__main__':
     lista = "booklist2000.csv"
